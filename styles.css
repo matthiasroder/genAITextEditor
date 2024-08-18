@@ -35,3 +35,18 @@ td {
     border: none;  /* Remove border from table cells */
     vertical-align: top;  /* Align textareas at the top */
 }
+
+/* Remove the border from the API key input */
+#apiKey {
+    border: none;
+    outline: none;  /* Optional: remove the focus outline as well */
+    background-color: transparent;  /* Optional: make the background transparent */
+}
+
+/* Set the height of the prompt textarea */
+#promptText {
+    height: auto;
+    min-height: 200px;  /* Adjust this value based on the text length */
+    overflow-y: auto;  /* Ensure vertical scrolling if text exceeds the height */
+    box-sizing: border-box;  /* Ensure padding is included in the height */
+}

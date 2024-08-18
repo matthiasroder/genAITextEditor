@@ -1,8 +1,35 @@
 let typingTimer;  // Timer identifier
-const typingInterval = 1000;  // Time in ms (1 second)
+const typingInterval = 500;  // Time in ms (1 second)
+
+// Add event listener to the prompt textarea
+document.getElementById('promptText').addEventListener('input', handlePromptChange);
+
+async function handlePromptChange() {
+    const rows = document.querySelectorAll('#editorTable tbody tr:not(:first-child)');  // Select all rows except the first one
+
+    for (let row of rows) {
+        const leftTextArea = row.querySelector('.leftText');
+        const rightTextArea = row.querySelector('.rightText');
+
+        if (leftTextArea.value.trim()) {  // Only process if there's content to transform
+            const transformedText = await transformTextWithOpenAI(leftTextArea.value);
+            rightTextArea.value = transformedText;
+
+            // Adjust textarea height to fit content
+            adjustTextAreaHeight(rightTextArea);
+        }
+    }
+}
 
 async function transformTextWithOpenAI(inputText) {
-    const apiKey = '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';  // Replace with your OpenAI API key
+    const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
+
+    const prompt = document.getElementById('promptText').value.trim();
+
+    if (!apiKey) {
+        console.error("API key is missing.");
+        return "Error: API key is required.";
+    }
 
     try {
         console.log("Sending request to OpenAI API...");
@@ -14,11 +41,11 @@ async function transformTextWithOpenAI(inputText) {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gpt-4o",  // Specify the model, e.g., gpt-4, gpt-3.5-turbo, etc.
+                model: "gpt-4",  // Specify the model, e.g., gpt-4, gpt-3.5-turbo, etc.
                 messages: [
                     {
                         role: "system",
-                        content: "You are a professional ghost writer. You take my ideas and transform them into well-written paragraphs for a book. You should expand my ideas where appropriate. I might add instructions for you in ALL CAPS, enclosed in square brackets, like so: [THIS IS AN INSTRUCTION]. Write for a normal kind of person but don’t be Shakespeare! Only return the finished text of the ghost writer."
+                        content: prompt  // Use the prompt from the editable textarea
                     },
                     {
                         role: "user",
@@ -33,7 +60,7 @@ async function transformTextWithOpenAI(inputText) {
 
         if (!response.ok) {
             console.error(`API request failed with status ${response.status}`);
-            return;
+            return `Error: API request failed with status ${response.status}`;
         }
 
         const data = await response.json();
@@ -42,6 +69,7 @@ async function transformTextWithOpenAI(inputText) {
         return data.choices[0].message.content;
     } catch (error) {
         console.error('Error with OpenAI API request:', error);
+        return 'Error: Could not process request.';
     }
 }
 
@@ -106,7 +134,7 @@ document.querySelectorAll('.leftText').forEach(textarea => {
     textarea.addEventListener('keydown', handleKeyDown);
 });
 
-// Call the function to attach event listeners initially
+// Attach event listeners to new rows
 attachEventListenersToNewRows();
 
 function attachEventListenersToNewRows() {

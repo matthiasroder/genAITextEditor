@@ -3,18 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mirrored Text Editor</title>
+    <title>Matthias Röder's GenAI Text Editor</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <table id="editorTable">
         <tbody>
+            <!-- New row for API Key input -->
+            <tr>
+                <td><strong>API Key</strong></td>
+                <td>
+                    <input type="text" id="apiKey" placeholder="Enter your API key here..." style="width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box;">
+                </td>
+            </tr>
+            <!-- Existing row with editable textarea -->
+            <tr>
+                <td><strong>Prompt</strong></td>
+                <td>
+                    <textarea id="promptText" class="rightText">
+You are a professional ghost writer. You take my text and you will transform it into a well-written paragraph. Write for a normal kind of person. Don’t be Shakespeare! Don't sound like ChatGPT. I might add instructions for you in ALL CAPS, enclosed in square brackets, like so: THIS IS AN INSTRUCTION. Only return the finished text of the ghost writer.
+                    </textarea>
+                </td>
+            </tr>
             <tr>
                 <td>
-                    <textarea class="leftText" placeholder="Type here..."></textarea>
+                    <textarea class="leftText" placeholder="Paragraph outline here. Shift + Down Arrow for new row"></textarea>
                 </td>
                 <td>
-                    <textarea class="rightText" placeholder="Mirrored text appears here..." readonly></textarea>
+                    <textarea class="rightText" placeholder="GenAI text appears here..." readonly></textarea>
                 </td>
             </tr>
         </tbody>
