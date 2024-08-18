@@ -1,0 +1,75 @@
+# genAI Text Editor
+
+This project is a simple web-based text editor that transforms user input text using OpenAI's GPT API. The editor allows you to input text in one column, and see the transformed text in another column. It also includes an editable prompt that guides the transformation process, as well as an input field for the API key.
+
+## Features
+
+- **API Key Input**: Securely enter your OpenAI API key directly in the web interface.
+- **Custom Prompt**: Edit the transformation prompt to customize how your text is processed.
+- **Live Text Transformation**: As you type, your text is automatically transformed using the GPT API and displayed in a separate column.
+
+## Installation
+
+### Prerequisites
+
+- A modern web browser (e.g., Chrome, Firefox, Edge)
+- An active OpenAI API key (You can obtain one by signing up on the [OpenAI website](https://beta.openai.com/signup/))
+
+### Step-by-Step Installation
+
+1. **Download the Files**
+   - Clone this repository or download the ZIP file and extract it to your desired location:
+     ```bash
+     git clone https://github.com/yourusername/mirrored-text-editor.git
+     ```
+     or [Download the ZIP](https://github.com/yourusername/mirrored-text-editor/archive/refs/heads/main.zip).
+
+2. **Open the `index.html` File**
+   - Navigate to the directory where you extracted the files.
+   - Open the `index.html` file in your web browser.
+
+3. **Enter Your API Key**
+   - At the top of the editor, you will see a field labeled "API Key". Enter your OpenAI API key here.
+
+4. **Customize the Prompt**
+   - Modify the prompt in the second row to change how the text is transformed. The default prompt is set for a ghostwriting scenario, but you can adjust it as needed.
+
+5. **Start Typing**
+   - In the left text area, start typing your text. The transformed text will appear on the right side.
+
+## Usage
+
+1. **Input Your Text**
+   - In the left column, enter the text you want to transform.
+
+2. **View Transformed Text**
+   - As you type, the transformed text will be displayed in the right column. This text is generated based on the prompt and the OpenAI GPT model specified in the code.
+
+3. **Customize as Needed**
+   - You can add new rows by holding `Shift` and pressing `Arrow Down`. Each new row allows you to transform additional pieces of text.
+
+## Customization
+
+### Modifying the Prompt
+- The prompt used for transformation is editable directly in the web interface. This allows you to experiment with different prompts to achieve various text transformation outcomes.
+
+### Adjusting Text Area Heights
+- The prompt text area automatically adjusts its height to fit the content. If you need to manually adjust the size, you can modify the CSS or the inline styles in `index.html`.
+
+## Known Issues
+
+- **API Key Security**: The API key is stored in the browser session and is not encrypted. Avoid sharing your screen or browser session with others to keep your API key secure.
+- **Browser Compatibility**: This tool is optimized for modern browsers. Older browsers may not support some of the JavaScript or CSS features used.
+
+## Troubleshooting
+
+- **API Key Issues**: If the text isn't transforming, ensure that your API key is correct and that you have sufficient credits with OpenAI.
+- **Layout Problems**: If the layout appears broken, try refreshing the page or resizing the browser window.
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
