@@ -1,3 +1,6 @@
+let typingTimer;  // Timer identifier
+const typingInterval = 1000;  // Time in ms (1 second)
+
 async function transformTextWithOpenAI(inputText) {
     const apiKey = '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';  // Replace with your OpenAI API key
 
@@ -11,7 +14,7 @@ async function transformTextWithOpenAI(inputText) {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gpt-4",  // Specify the model, e.g., gpt-4, gpt-3.5-turbo, etc.
+                model: "gpt-4o",  // Specify the model, e.g., gpt-4, gpt-3.5-turbo, etc.
                 messages: [
                     {
                         role: "system",
@@ -42,12 +45,28 @@ async function transformTextWithOpenAI(inputText) {
     }
 }
 
-async function handleInput(event) {
+function handleInput(event) {
     const leftText = event.target;
     const rightText = leftText.parentElement.nextElementSibling.querySelector('.rightText');
 
-    const transformedText = await transformTextWithOpenAI(leftText.value);
-    rightText.value = transformedText;
+    clearTimeout(typingTimer);  // Clear the previous timer
+
+    typingTimer = setTimeout(async () => {
+        const transformedText = await transformTextWithOpenAI(leftText.value);
+        rightText.value = transformedText;
+
+        // Adjust textarea height to fit content
+        adjustTextAreaHeight(rightText);
+    }, typingInterval);
+}
+
+function handleKeyDown(event) {
+    if (event.shiftKey && event.key === 'ArrowDown') {
+        event.preventDefault();
+        addNewRow();
+    } else {
+        handleInput(event);  // Process the input event for typing delay
+    }
 }
 
 function addNewRow() {
@@ -60,7 +79,7 @@ function addNewRow() {
     const leftTextArea = document.createElement('textarea');
     leftTextArea.classList.add('leftText');
     leftTextArea.placeholder = "Type here...";
-    leftTextArea.addEventListener('input', handleInput);
+    leftTextArea.addEventListener('keydown', handleKeyDown);  // Attach event listener
 
     const rightTextArea = document.createElement('textarea');
     rightTextArea.classList.add('rightText');
@@ -76,29 +95,23 @@ function addNewRow() {
     tableBody.appendChild(newRow);
 }
 
+// Adjust the height of the textarea to fit its content
+function adjustTextAreaHeight(textarea) {
+    textarea.style.height = 'auto';  // Reset the height
+    textarea.style.height = textarea.scrollHeight + 'px';  // Set it to scrollHeight
+}
+
 // Attach event listeners to the initial textarea
 document.querySelectorAll('.leftText').forEach(textarea => {
-    textarea.addEventListener('input', handleInput);
-    textarea.addEventListener('keydown', function(event) {
-        if (event.shiftKey && event.key === 'Enter') {
-            event.preventDefault();  // Prevent the default behavior (adding a new line)
-            addNewRow();
-        }
-    });
+    textarea.addEventListener('keydown', handleKeyDown);
 });
-
-// Add similar event listeners to new text areas
-function attachEventListenersToNewRows() {
-    document.querySelectorAll('.leftText').forEach(textarea => {
-        textarea.addEventListener('input', handleInput);
-        textarea.addEventListener('keydown', function(event) {
-            if (event.shiftKey && event.key === 'Enter') {
-                event.preventDefault();
-                addNewRow();
-            }
-        });
-    });
-}
 
 // Call the function to attach event listeners initially
 attachEventListenersToNewRows();
+
+function attachEventListenersToNewRows() {
+    document.querySelectorAll('.leftText').forEach(textarea => {
+        textarea.removeEventListener('keydown', handleKeyDown); // Remove previous listeners to prevent duplication
+        textarea.addEventListener('keydown', handleKeyDown);
+    });
+}

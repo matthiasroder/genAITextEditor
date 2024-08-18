@@ -2,30 +2,36 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;  /* Align content at the top */
     height: 100vh;
     margin: 0;
+    overflow-y: auto;  /* Allow vertical scrolling if content overflows */
 }
 
 table {
     width: 80%;
-    height: 60%;
+    height: auto;  /* Remove fixed height */
     border-collapse: collapse;
+    border: none;  /* Remove table border */
+    margin-top: 20px;  /* Add space above the table */
 }
 
 textarea {
     width: 100%;
-    height: 100%;
+    height: auto;  /* Dynamic sizing for textareas */
     padding: 10px;
     font-size: 16px;
     box-sizing: border-box;
+    resize: vertical;  /* Allow vertical resizing */
+    border: none;  /* Remove border from textareas */
 }
 
 textarea:focus {
-    outline: none;
+    outline: none;  /* Remove focus outline */
 }
 
 td {
     width: 50%;
-    border: 1px solid #ccc;
+    border: none;  /* Remove border from table cells */
+    vertical-align: top;  /* Align textareas at the top */
 }
