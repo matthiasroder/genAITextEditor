@@ -56,6 +56,6 @@ This project is a simple web- and grid-based text editor that transforms user in
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
-## License
+## Copyright
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Copyright by Matthias Röder. All rights reserved.
