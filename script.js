@@ -175,3 +175,66 @@ function concatenateRightTextFields() {
 
     return concatenatedText;
 }
+
+document.getElementById('feedbackText').addEventListener('focus', handleFeedbackFocus);
+
+async function handleFeedbackFocus() {
+    const concatenatedText = concatenateRightTextFields();  // Concatenate all right text fields
+    const feedbackPrompt = "Read the following text and find a simple and direct question that might help the author to improve the text. Act as if you are a grade school teacher.";
+
+    const feedbackText = await getFeedbackFromOpenAI(concatenatedText, feedbackPrompt);
+    document.getElementById('feedbackText').value = feedbackText;
+
+    // Adjust textarea height to fit content
+    adjustTextAreaHeight(document.getElementById('feedbackText'));
+}
+
+async function getFeedbackFromOpenAI(inputText, prompt) {
+    const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
+
+    if (!apiKey) {
+        console.error("API key is missing.");
+        return "Error: API key is required.";
+    }
+
+    try {
+        console.log("Sending request to OpenAI API...");
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: prompt  // Use the provided prompt
+                    },
+                    {
+                        role: "user",
+                        content: inputText
+                    }
+                ],
+                max_tokens: 100  // Adjust as necessary
+            })
+        });
+
+        console.log("Response received from OpenAI API...");
+
+        if (!response.ok) {
+            console.error(`API request failed with status ${response.status}`);
+            return `Error: API request failed with status ${response.status}`;
+        }
+
+        const data = await response.json();
+        console.log("Response data:", data);  // Inspect the response data
+
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('Error with OpenAI API request:', error);
+        return 'Error: Could not process request.';
+    }
+}

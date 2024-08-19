@@ -64,7 +64,18 @@ td {
 /* Set the height of the prompt textarea */
 #promptText {
     height: auto;
-    min-height: 200px;  /* Adjust this value based on the text length */
+    min-height: 130px;  /* Adjust this value based on the text length */
     overflow-y: auto;  /* Ensure vertical scrolling if text exceeds the height */
     box-sizing: border-box;  /* Ensure padding is included in the height */
+}
+
+#feedbackText {
+    background-color: #ffffcc; /* Light red background */
+    color: #333;               /* Darker text color for readability */
+    padding: 10px;             /* Add some padding for better appearance */
+    font-size: 16px;           /* Set a comfortable font size */
+    box-sizing: border-box;    /* Ensures padding is included in the width/height */
+    min-height: 100px;  /* Adjust this value based on the text length */
+    width: 100%;               /* Make the textarea take the full width */
+    resize: none;              /* Disable manual resizing */
 }
