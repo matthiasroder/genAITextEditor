@@ -1,25 +1,32 @@
 let typingTimer;  // Timer identifier
-const typingInterval = 500;  // Time in ms (1 second)
+const typingInterval = 750;  // Time in ms (1 second)
 
 // Add event listener to the prompt textarea
 document.getElementById('promptText').addEventListener('input', handlePromptChange);
 
 async function handlePromptChange() {
-    const rows = document.querySelectorAll('#editorTable tbody tr:not(:first-child)');  // Select all rows except the first one
+    clearTimeout(typingTimer);  // Clear the previous timer if it exists
 
-    for (let row of rows) {
-        const leftTextArea = row.querySelector('.leftText');
-        const rightTextArea = row.querySelector('.rightText');
+    typingTimer = setTimeout(async () => {  // Set a new timer
+        // Select all rows except the first two
+        const rows = document.querySelectorAll('#editorTable tbody tr:nth-child(n+3)');
 
-        if (leftTextArea.value.trim()) {  // Only process if there's content to transform
-            const transformedText = await transformTextWithOpenAI(leftTextArea.value);
-            rightTextArea.value = transformedText;
+        for (let row of rows) {
+            const leftTextArea = row.querySelector('.leftText');
+            const rightTextArea = row.querySelector('.rightText');
 
-            // Adjust textarea height to fit content
-            adjustTextAreaHeight(rightTextArea);
+            if (leftTextArea && leftTextArea.value.trim()) {  // Check if leftTextArea exists and has content
+                const transformedText = await transformTextWithOpenAI(leftTextArea.value);
+                rightTextArea.value = transformedText;
+
+                // Adjust textarea height to fit content
+                adjustTextAreaHeight(rightTextArea);
+            }
         }
-    }
+    }, typingInterval);  // Execute the function after the typing interval
 }
+
+
 
 async function transformTextWithOpenAI(inputText) {
     const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
@@ -52,7 +59,7 @@ async function transformTextWithOpenAI(inputText) {
                         content: inputText
                     }
                 ],
-                max_tokens: 1000  // Adjust as necessary
+                max_tokens: 250  // Adjust as necessary
             })
         });
 
