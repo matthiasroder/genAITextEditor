@@ -5,6 +5,7 @@ This project is a simple web- and grid-based text editor that transforms user in
 ## Features
 
 - **Live Text Transformation**: As you type, your text is automatically transformed using the GPT API and displayed in a separate column.
+- **AI Feedback**: Receive feedback on your text as you write.
 - **Grid-Based Layout**: Allows you to see your outline and the AI-generated text on the same page.
 - **Custom Prompt**: Edit the transformation prompt to customize how your text is processed.
 - **API Key Input**: Securely enter your OpenAI API key directly in the web interface.
@@ -51,6 +52,9 @@ This project is a simple web- and grid-based text editor that transforms user in
   
 4. **Modifying the Prompt**
 - The prompt used for transformation is editable directly in the web interface. This allows you to experiment with different prompts to achieve various text transformation outcomes.
+
+5. **Get AI Feedback**
+- Click in the yellow textarea to receive feedback on the current version of your text. 
 
 ## Contributing
 
