@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<br><br>
     <table id="editorTable">
         <tbody>
+          <tr>
+    <td>
+        <input type="text" id="docName" placeholder="Enter document name..." style="width: 70%; padding: 10px; font-size: 16px; box-sizing: border-box;">
+        <button id="downloadBtn" style="float: right; padding: 10px 20px; font-size: 16px;">Download</button>
+    </td>
+    </tr>
             <tr>
                 <td><strong>API Key</strong></td>
                 <td>
@@ -18,7 +26,7 @@
             <tr>
                 <td><strong>Prompt</strong></td>
                 <td>
-                    <textarea id="promptText" class="rightText">
+                    <textarea id="promptText" class="promptText">
 You are a professional ghost writer. You take my text and you will transform it into a well-written paragraph. Write for a normal kind of person. Don’t be Shakespeare! Don't sound like ChatGPT. I might add instructions for you in ALL CAPS, enclosed in square brackets, like so: THIS IS AN INSTRUCTION. Only return the finished text of the ghost writer.
                     </textarea>
                 </td>
@@ -31,8 +39,8 @@ You are a professional ghost writer. You take my text and you will transform it 
                     <textarea class="rightText" placeholder="GenAI text appears here..." readonly></textarea>
                 </td>
             </tr>
-        </tbody>
-    </table>
+          </tbody>
+      </table>
 
     <script src="script.js"></script>
 </body>

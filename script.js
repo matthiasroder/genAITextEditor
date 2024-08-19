@@ -150,3 +150,30 @@ function attachEventListenersToNewRows() {
         textarea.addEventListener('keydown', handleKeyDown);
     });
 }
+
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    var filename = document.getElementById('docName').value.trim() || 'default_filename.txt'; // Ensure filename is trimmed of whitespace
+    var allText = concatenateRightTextFields(); // Use the existing function to get concatenated text from rightText elements
+
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allText));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+});
+
+function concatenateRightTextFields() {
+    var rightTextElements = document.getElementsByClassName('rightText');
+    var concatenatedText = '';
+
+    for (var i = 0; i < rightTextElements.length; i++) {
+        concatenatedText += rightTextElements[i].value + "\n"; // Adding a newline for separation
+    }
+
+    return concatenatedText;
+}
