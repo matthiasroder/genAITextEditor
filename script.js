@@ -1,5 +1,5 @@
 let typingTimer;  // Timer identifier
-const typingInterval = 750;  // Time in ms (1 second)
+const typingInterval = 1000;  // Time in ms (1 second)
 
 // Add event listener to the prompt textarea
 document.getElementById('promptText').addEventListener('input', handlePromptChange);
@@ -26,8 +26,6 @@ async function handlePromptChange() {
     }, typingInterval);  // Execute the function after the typing interval
 }
 
-
-
 async function transformTextWithOpenAI(inputText) {
     const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
 
@@ -48,7 +46,7 @@ async function transformTextWithOpenAI(inputText) {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gpt-4",  // Specify the model, e.g., gpt-4, gpt-3.5-turbo, etc.
+                model: "gpt-4o-mini",
                 messages: [
                     {
                         role: "system",

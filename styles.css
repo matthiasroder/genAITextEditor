@@ -16,6 +16,24 @@ table {
     margin-top: 20px;  /* Add space above the table */
 }
 
+/* Add margin-bottom to the first row content */
+.firstRowContent {
+    margin-bottom: 20px;  /* Adjust the value as needed */
+}
+
+input {
+    width: 70%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+button {
+  float: right;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
 textarea {
     width: 100%;
     height: auto;  /* Dynamic sizing for textareas */
