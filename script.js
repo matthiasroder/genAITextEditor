@@ -26,7 +26,7 @@ async function handlePromptChange() {
     }, typingInterval);  // Execute the function after the typing interval
 }
 
-async function transformTextWithOpenAI(inputText) {
+async function transformTextWithOpenAI(inputText, summaryText = '') {
     const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
 
     const prompt = document.getElementById('promptText').value.trim();
@@ -54,10 +54,10 @@ async function transformTextWithOpenAI(inputText) {
                     },
                     {
                         role: "user",
-                        content: inputText
+                        content: `Summary of previous texts: ${summaryText}\n\nCurrent text: ${inputText}`
                     }
                 ],
-                max_tokens: 250  // Adjust as necessary
+                max_tokens: 500  // Adjust as necessary
             })
         });
 
@@ -78,20 +78,6 @@ async function transformTextWithOpenAI(inputText) {
     }
 }
 
-function handleInput(event) {
-    const leftText = event.target;
-    const rightText = leftText.parentElement.nextElementSibling.querySelector('.rightText');
-
-    clearTimeout(typingTimer);  // Clear the previous timer
-
-    typingTimer = setTimeout(async () => {
-        const transformedText = await transformTextWithOpenAI(leftText.value);
-        rightText.value = transformedText;
-
-        // Adjust textarea height to fit content
-        adjustTextAreaHeight(rightText);
-    }, typingInterval);
-}
 
 function handleKeyDown(event) {
     if (event.shiftKey && event.key === 'ArrowDown') {
@@ -237,4 +223,91 @@ async function getFeedbackFromOpenAI(inputText, prompt) {
         console.error('Error with OpenAI API request:', error);
         return 'Error: Could not process request.';
     }
+}
+
+async function summarizeLeftTexts(currentTextArea) {
+    const apiKey = document.getElementById('apiKey').value.trim();  // Get the API key from the input field
+
+    if (!apiKey) {
+        console.error("API key is missing.");
+        return "Error: API key is required.";
+    }
+
+    // Get all left-hand textareas up to the current one
+    const leftTextAreas = document.querySelectorAll('.leftText');
+    let textsToSummarize = '';
+
+    for (let i = 0; i < leftTextAreas.length; i++) {
+        if (leftTextAreas[i] === currentTextArea) break; // Stop once we reach the current textarea
+        textsToSummarize += leftTextAreas[i].value + "\n"; // Concatenate all previous texts
+    }
+
+    if (!textsToSummarize.trim()) return ""; // If there's no text to summarize, return an empty string
+
+    const prompt = "Summarize the following texts in a concise manner:";
+
+    try {
+        console.log("Sending summary request to OpenAI API...");
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: prompt  // Use the summary prompt
+                    },
+                    {
+                        role: "user",
+                        content: textsToSummarize
+                    }
+                ],
+                max_tokens: 150  // Adjust as necessary for summary length
+            })
+        });
+
+        console.log("Summary response received from OpenAI API...");
+
+        if (!response.ok) {
+            console.error(`API request failed with status ${response.status}`);
+            return `Error: API request failed with status ${response.status}`;
+        }
+
+        const data = await response.json();
+        console.log("Summary response data:", data);  // Inspect the response data
+
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('Error with OpenAI API request:', error);
+        return 'Error: Could not process summary request.';
+    }
+}
+
+async function handleInput(event) {
+    const leftText = event.target;
+    const rightText = leftText.parentElement.nextElementSibling.querySelector('.rightText');
+
+    clearTimeout(typingTimer);  // Clear the previous timer
+
+    typingTimer = setTimeout(async () => {
+        // Get the summary of all left-hand texts before the current one
+        const summaryText = await summarizeLeftTexts(leftText);
+
+        if (summaryText) {
+            console.log("Summary:", summaryText);  // Display the summary in the console for debugging
+            // Optionally, display the summary somewhere on the page
+        }
+
+        // Transform the current left-hand text using the summary
+        const transformedText = await transformTextWithOpenAI(leftText.value, summaryText);
+        rightText.value = transformedText;
+
+        // Adjust textarea height to fit content
+        adjustTextAreaHeight(rightText);
+    }, typingInterval);
 }
