@@ -54,7 +54,7 @@ async function transformTextWithOpenAI(inputText, summaryText = '') {
                     },
                     {
                         role: "user",
-                        content: `Summary of previous texts: ${summaryText}\n\nCurrent text: ${inputText}`
+                        content: `Summary: ${summaryText}\n\nCurrent text: ${inputText}`
                     }
                 ],
                 max_tokens: 500  // Adjust as necessary
