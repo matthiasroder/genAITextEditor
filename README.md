@@ -1,6 +1,6 @@
 # genAI Text Editor
 
-This project is a simple web- and grid-based text editor that transforms user input text using OpenAI's GPT API. The editor allows you to input text in one column, and see the transformed text in another column. It also includes an editable prompt that guides the transformation process, as well as an input field for the API key.
+This project is a simple web- and grid-based text editor that transforms user input text using OpenAI's GPT API. The editor allows you to input text in one column, and see the transformed text in another column. It also includes an editable prompt that guides the transformation process, as well as an input field for the API key. In addition there is a "Feedback" field that generates useful ideas for improving the text.
 
 ## Features
 
@@ -54,11 +54,13 @@ This project is a simple web- and grid-based text editor that transforms user in
 - The prompt used for transformation is editable directly in the web interface. This allows you to experiment with different prompts to achieve various text transformation outcomes.
 
 5. **Get AI Feedback**
-- Click in the yellow textarea to receive feedback on the current version of your text. 
+- Click in the yellow textarea to receive feedback on the current version of your text.
 
-## Contributing
+6. **Save text**
+- You can save the current version of generated text by giving it a name and press "Download.
+- add ".txt" to the filename for convenience.
+- 
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
 ## Copyright
 
