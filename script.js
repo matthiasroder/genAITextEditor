@@ -82,14 +82,14 @@ async function transformTextWithOpenAI(inputText, summaryText = '') {
 function handleKeyDown(event) {
     if (event.shiftKey && event.key === 'ArrowDown') {
         event.preventDefault();
-        addNewRow();
+        const currentRow = event.target.closest('tr');
+        addNewRow(currentRow);
     } else {
         handleInput(event);  // Process the input event for typing delay
     }
 }
 
-function addNewRow() {
-    const tableBody = document.querySelector('#editorTable tbody');
+function addNewRow(currentRow) {
     const newRow = document.createElement('tr');
 
     const leftCell = document.createElement('td');
@@ -111,8 +111,13 @@ function addNewRow() {
     newRow.appendChild(leftCell);
     newRow.appendChild(rightCell);
 
-    tableBody.appendChild(newRow);
+    // Insert the new row after the current row
+    currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
+
+    // Attach event listeners to the new row
+    attachEventListenersToNewRows();
 }
+
 
 // Adjust the height of the textarea to fit its content
 function adjustTextAreaHeight(textarea) {
