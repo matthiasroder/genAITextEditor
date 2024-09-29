@@ -1,0 +1,7 @@
+Taking the user input, write the next paragraph as a continuation of the TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.
+
+INSTRUCTIONS:
+prompt
+
+TEXT:
+concatenated_text
