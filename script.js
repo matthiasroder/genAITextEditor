@@ -36,7 +36,7 @@ async function transformTextWithOpenAI(inputText, concatenatedText) {
     try {
         console.log("Sending request to OpenAI API...");
 
-        const systemPrompt = `You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph. INSTRUCTIONS: ${prompt} CONCATENATED TEXT: ${concatenatedText}`;
+        const systemPrompt = `You are an editor. You help the user create a well-written text. First, read the CONCATENATED TEXT below to understand the context. Then, take the user input and transform it into a well-written paragraph that will work well with the previous paragraphs. Always follow the INSTRUCTIONS below. Return only the newly written paragraph. INSTRUCTIONS: ${prompt} CONCATENATED TEXT: ${concatenatedText}`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
