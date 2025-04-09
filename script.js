@@ -8,7 +8,43 @@ const windowId = crypto.randomUUID();
 let activeDocument = null;
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', initializeApplication);
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApplication();
+    
+    // Set up event listeners for settings panel
+    document.getElementById('apiKeyPanel').addEventListener('input', function() {
+        document.getElementById('apiKey').value = this.value;
+    });
+    
+    document.getElementById('systemPromptTextPanel').addEventListener('input', function() {
+        document.getElementById('systemPromptText').value = this.value;
+    });
+    
+    document.getElementById('promptTextPanel').addEventListener('input', function() {
+        document.getElementById('promptText').value = this.value;
+    });
+    
+    // Initialize panel values from existing fields
+    document.getElementById('apiKeyPanel').value = document.getElementById('apiKey').value;
+    document.getElementById('systemPromptTextPanel').value = document.getElementById('systemPromptText').value;
+    document.getElementById('promptTextPanel').value = document.getElementById('promptText').value;
+});
+
+// Toggle settings panel
+function toggleSettingsPanel() {
+    const panel = document.getElementById('settingsPanel');
+    const overlay = document.getElementById('panelOverlay');
+    
+    panel.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    // Update panel values when opening
+    if (panel.classList.contains('active')) {
+        document.getElementById('apiKeyPanel').value = document.getElementById('apiKey').value;
+        document.getElementById('systemPromptTextPanel').value = document.getElementById('systemPromptText').value;
+        document.getElementById('promptTextPanel').value = document.getElementById('promptText').value;
+    }
+}
 
 
 // Document model structures

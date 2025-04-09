@@ -22,6 +22,7 @@
         <button id="downloadBothBtn">Both Sides</button>
       </div>
     </div>
+    <button id="toggleSettingsBtn" onclick="toggleSettingsPanel()">⚙️ Settings</button>
     <div class="versionControlsInline">
       <button id="saveVersionBtn">Save Version</button>
       <select id="versionSelector"></select>
@@ -40,6 +41,28 @@
       </div>
     </div>
   </div>
+  
+  <div id="panelOverlay" class="panel-overlay" onclick="toggleSettingsPanel()"></div>
+  <div id="settingsPanel" class="side-panel">
+    <div class="side-panel-header">
+      <h3>Editor Settings</h3>
+      <button class="close-panel" onclick="toggleSettingsPanel()">×</button>
+    </div>
+    <div class="side-panel-content">
+      <div class="settings-section">
+        <h4>API Key</h4>
+        <input type="text" id="apiKeyPanel" placeholder="Enter your API key here...">
+      </div>
+      <div class="settings-section">
+        <h4>System Prompt</h4>
+        <textarea id="systemPromptTextPanel" class="systemPromptText">You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.</textarea>
+      </div>
+      <div class="settings-section">
+        <h4>Instructions</h4>
+        <textarea id="promptTextPanel" class="promptText">Don't be Shakespeare! Don't sound like ChatGPT.</textarea>
+      </div>
+    </div>
+  </div>
 
   <table id="editorTable">
     <tbody>
@@ -50,22 +73,23 @@
           </div>
         </td>
       </tr>
-      <tr>
+      <!-- Hidden fields to maintain compatibility with existing code -->
+      <tr style="display: none;">
         <td><strong>API Key</strong></td>
         <td>
           <input type="text" id="apiKey" placeholder="Enter your API key here..." style="width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box;">
         </td>
       </tr>
-      <tr>
+      <tr style="display: none;">
         <td><strong>System Prompt</strong></td>
         <td>
           <textarea id="systemPromptText" class="systemPromptText">You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.</textarea>
         </td>
       </tr>
-      <tr>
+      <tr style="display: none;">
         <td><strong>Instructions</strong></td>
         <td>
-          <textarea id="promptText" class="promptText">Don’t be Shakespeare! Don't sound like ChatGPT.</textarea>
+          <textarea id="promptText" class="promptText">Don't be Shakespeare! Don't sound like ChatGPT.</textarea>
         </td>
       </tr>
       <tr>
