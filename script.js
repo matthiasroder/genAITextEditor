@@ -530,11 +530,13 @@ function resetEditor() {
     
     document.getElementById('versionInfo').textContent = '';
     
-    // Adjust textarea heights
-    document.querySelectorAll('textarea').forEach(adjustTextAreaHeight);
-    
     // Clear feedback
     document.getElementById('feedbackText').value = '';
+    
+    // Adjust textarea heights with a slight delay to ensure rendering
+    setTimeout(() => {
+        document.querySelectorAll('textarea').forEach(adjustTextAreaHeight);
+    }, 10);
 }
 
 // Handle external changes from other windows
@@ -721,6 +723,21 @@ function loadExistingDocument(docId) {
         activeWindow: windowId
     };
     
+    // Update document name in UI first
+    document.getElementById('docName').value = activeDocument.name;
+    document.getElementById('currentDocName').textContent = activeDocument.name;
+    
+    // Update URL to include document ID
+    window.history.pushState({}, '', `?doc=${docId}`);
+    
+    // Update version selector
+    updateVersionSelector();
+    
+    // Ensure there's a valid version index
+    if (activeDocument.currentVersionIndex < 0 && activeDocument.versions.length > 0) {
+        activeDocument.currentVersionIndex = activeDocument.versions.length - 1;
+    }
+    
     // Load latest version if available
     if (activeDocument.versions.length > 0) {
         loadVersion(activeDocument.currentVersionIndex);
@@ -728,14 +745,7 @@ function loadExistingDocument(docId) {
         resetEditor();
     }
     
-    // Update document name in UI
-    document.getElementById('docName').value = activeDocument.name;
-    document.getElementById('currentDocName').textContent = activeDocument.name;
-    
-    // Update URL to include document ID
-    window.history.pushState({}, '', `?doc=${docId}`);
-    
-    updateVersionSelector();
+    console.log(`Loaded document: ${activeDocument.name} with ${activeDocument.versions.length} versions`);
 }
 
 function updateVersionSelector() {
@@ -840,8 +850,10 @@ function loadVersion(index) {
     activeDocument.currentVersionIndex = index;
     updateVersionSelector();
     
-    // Adjust heights of all textareas
-    document.querySelectorAll('textarea').forEach(adjustTextAreaHeight);
+    // Adjust heights of all textareas - need to do this with a slight delay to ensure rendering completes
+    setTimeout(() => {
+        document.querySelectorAll('textarea').forEach(adjustTextAreaHeight);
+    }, 10);
 }
 
 function trimAutoSaves() {
