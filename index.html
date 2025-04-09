@@ -8,6 +8,10 @@
 </head>
 <body>
   <div class="documentControls">
+    <div id="docNameContainer">
+      <span id="currentDocName" class="editable" contenteditable="true"></span>
+      <span id="editIndicator" class="hidden">(click to edit)</span>
+    </div>
     <button id="newDocBtn">New Document</button>
     <button id="openDocBtn">Open Document</button>
     <div class="downloadOptions">
@@ -18,18 +22,30 @@
         <button id="downloadBothBtn">Both Sides</button>
       </div>
     </div>
-    <div id="docNameContainer">
-      <span id="currentDocName" class="editable" contenteditable="true"></span>
-      <span id="editIndicator" class="hidden">(click to edit)</span>
+    <div class="settingsDropdown">
+      <button id="settingsBtn">⚙️ Settings</button>
+      <div class="settingsDropdownContent">
+        <div class="settingsItem">
+          <label for="apiKey"><strong>API Key</strong></label>
+          <input type="text" id="apiKey" placeholder="Enter your API key here...">
+        </div>
+        <div class="settingsItem">
+          <label for="systemPromptText"><strong>System Prompt</strong></label>
+          <textarea id="systemPromptText" class="systemPromptText">You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.</textarea>
+        </div>
+        <div class="settingsItem">
+          <label for="promptText"><strong>Instructions</strong></label>
+          <textarea id="promptText" class="promptText">Don't be Shakespeare! Don't sound like ChatGPT.</textarea>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="versionControls">
-    <button id="saveVersionBtn">Save Version</button>
-    <select id="versionSelector"></select>
-    <button id="prevVersionBtn">←</button>
-    <button id="nextVersionBtn">→</button>
-    <span id="versionInfo"></span>
+    <div class="versionControlsInline">
+      <button id="saveVersionBtn">Save Version</button>
+      <select id="versionSelector"></select>
+      <button id="prevVersionBtn">←</button>
+      <button id="nextVersionBtn">→</button>
+      <span id="versionInfo"></span>
+    </div>
   </div>
   
   <div id="documentListModal" class="modal hidden">
@@ -49,24 +65,6 @@
           <div class="firstRowContent">
             <input type="text" id="docName" placeholder="Enter document name..." style="display: none;">
           </div>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>API Key</strong></td>
-        <td>
-          <input type="text" id="apiKey" placeholder="Enter your API key here..." style="width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box;">
-        </td>
-      </tr>
-      <tr>
-        <td><strong>System Prompt</strong></td>
-        <td>
-          <textarea id="systemPromptText" class="systemPromptText">You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.</textarea>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Instructions</strong></td>
-        <td>
-          <textarea id="promptText" class="promptText">Don’t be Shakespeare! Don't sound like ChatGPT.</textarea>
         </td>
       </tr>
       <tr>
