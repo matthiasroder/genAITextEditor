@@ -30,7 +30,7 @@ table {
     position: relative;
 }
 
-.downloadMenu, .settingsDropdownContent {
+.downloadMenu {
     position: absolute;
     right: 0;
     top: 40px;
@@ -41,6 +41,19 @@ table {
     display: flex;
     flex-direction: column;
     z-index: 10;
+    min-width: 150px;
+}
+
+.settingsDropdownContent {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    flex-direction: column;
+    z-index: 50;
     min-width: 150px;
 }
 
@@ -66,26 +79,51 @@ table {
     display: none;
     width: 350px;
     padding: 10px;
+    pointer-events: none; /* Allow clicks to pass through when hidden */
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 
-.settingsDropdown:hover .settingsDropdownContent {
+/* Only show when hovering the button, not the entire dropdown */
+#settingsBtn:hover + .settingsDropdownContent, 
+.settingsDropdownContent:hover {
     display: flex;
+    opacity: 1;
+    pointer-events: auto; /* Re-enable pointer events when visible */
+}
+
+.settingsHeader {
+    padding: 8px 10px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    width: 100%;
+}
+
+.settingsHeader h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
 }
 
 .settingsItem {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 10px 15px;
     border-bottom: 1px solid #eee;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .settingsItem:last-child {
     border-bottom: none;
+    border-radius: 0 0 4px 4px;
 }
 
 .settingsItem label {
     margin-bottom: 5px;
     font-size: 14px;
+    color: #444;
 }
 
 .settingsItem input, .settingsItem textarea {
