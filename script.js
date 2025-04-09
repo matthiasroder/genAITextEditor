@@ -10,6 +10,16 @@ let activeDocument = null;
 // Initialize the application
 document.addEventListener('DOMContentLoaded', initializeApplication);
 
+// Toggle settings panel
+function toggleSettings() {
+    const settingsPanel = document.getElementById('settingsPanel');
+    if (settingsPanel.style.display === 'block') {
+        settingsPanel.style.display = 'none';
+    } else {
+        settingsPanel.style.display = 'block';
+    }
+}
+
 // Document model structures
 function createNewDocument(name = 'Untitled') {
     return {

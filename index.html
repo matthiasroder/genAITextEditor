@@ -22,11 +22,12 @@
         <button id="downloadBothBtn">Both Sides</button>
       </div>
     </div>
-    <div class="settingsDropdown">
-      <button id="settingsBtn">⚙️ Settings</button>
-      <div class="settingsDropdownContent">
+    <div class="settingsWrapper">
+      <button id="settingsBtn" onclick="toggleSettings()">⚙️ Settings</button>
+      <div id="settingsPanel" class="settingsPanel">
         <div class="settingsHeader">
           <h3>Editor Settings</h3>
+          <button class="closeSettings" onclick="toggleSettings()">×</button>
         </div>
         <div class="settingsItem">
           <label for="apiKey"><strong>API Key</strong></label>
