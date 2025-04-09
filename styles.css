@@ -65,9 +65,9 @@ input {
 }
 
 button {
-  float: right;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 15px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 textarea {
@@ -116,7 +116,7 @@ td {
     resize: none;              /* Disable manual resizing */
 }
 
-.documentControls, .versionControls {
+.documentControls {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -125,10 +125,16 @@ td {
     padding: 10px;
     background-color: #f5f5f5;
     border-radius: 5px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
 }
 
-.documentControls {
-    justify-content: flex-start;
+.versionControlsInline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: 10px;
 }
 
 #docNameContainer {
@@ -283,21 +289,27 @@ td {
 }
 
 #versionSelector {
-    flex-grow: 1;
-    padding: 8px;
-    font-size: 14px;
+    min-width: 120px;
+    max-width: 200px;
+    padding: 6px;
+    font-size: 13px;
 }
 
 #prevVersionBtn, #nextVersionBtn {
     float: none;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 13px;
 }
 
 #versionInfo {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
-    margin-left: auto;
+}
+
+#saveVersionBtn {
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .hidden {
