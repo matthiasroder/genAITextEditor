@@ -179,20 +179,56 @@ function attachEventListenersToNewRows() {
 
 // Initialize event listeners
 function initializeEventListeners() {
-    // Document name change
+    // Document name change - hidden field keeps working for backwards compatibility
     document.getElementById('docName').addEventListener('change', function() {
         if (!activeDocument) return;
         
         const newName = this.value.trim() || 'Untitled';
-        activeDocument.name = newName;
+        updateDocumentName(newName);
+    });
+    
+    // Make document name in header editable
+    const currentDocName = document.getElementById('currentDocName');
+    const editIndicator = document.getElementById('editIndicator');
+    
+    // Show edit hint when hovering
+    currentDocName.addEventListener('mouseenter', function() {
+        if (activeDocument) {
+            editIndicator.classList.remove('hidden');
+        }
+    });
+    
+    currentDocName.addEventListener('mouseleave', function() {
+        editIndicator.classList.add('hidden');
+    });
+    
+    // Handle editing of document name
+    currentDocName.addEventListener('focus', function() {
+        // Store original value in case of cancel
+        this.dataset.originalValue = this.textContent;
+    });
+    
+    currentDocName.addEventListener('blur', function() {
+        if (!activeDocument) return;
         
-        // Update document registry
-        updateDocumentRegistry(activeDocument.id, {
-            name: newName
-        });
+        const newName = this.textContent.trim() || 'Untitled';
+        this.textContent = newName; // Update display
         
-        // Update UI
-        document.getElementById('currentDocName').textContent = newName;
+        // Update all places where name is stored
+        updateDocumentName(newName);
+    });
+    
+    // Handle Enter key to save and escape to cancel
+    currentDocName.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.blur(); // Trigger the blur handler
+        } else if (e.key === 'Escape') {
+            // Restore original value
+            this.textContent = this.dataset.originalValue || '';
+            e.preventDefault();
+            this.blur();
+        }
     });
     
     // Document management
@@ -739,6 +775,21 @@ function saveDocumentToStorage() {
         versions: activeDocument.versions,
         currentVersionIndex: activeDocument.currentVersionIndex
     }));
+}
+
+function updateDocumentName(newName) {
+    if (!activeDocument) return;
+    
+    activeDocument.name = newName;
+    
+    // Update document registry
+    updateDocumentRegistry(activeDocument.id, {
+        name: newName
+    });
+    
+    // Update UI in all places
+    document.getElementById('docName').value = newName;
+    document.getElementById('currentDocName').textContent = newName;
 }
 
 function createAndLoadNewDocument(name = 'Untitled') {

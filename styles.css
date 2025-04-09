@@ -131,10 +131,45 @@ td {
     justify-content: flex-start;
 }
 
-#currentDocName {
+#docNameContainer {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+#currentDocName {
     font-style: italic;
     color: #666;
+    padding: 3px 6px;
+    border-radius: 3px;
+    min-width: 100px;
+    text-align: right;
+    outline: none;
+}
+
+#currentDocName:hover {
+    background-color: #f0f0f0;
+}
+
+#currentDocName:focus {
+    background-color: #f0f0f0;
+    border: 1px dashed #ccc;
+    padding: 2px 5px;
+}
+
+#editIndicator {
+    position: absolute;
+    right: 0;
+    bottom: -15px;
+    font-size: 10px;
+    color: #999;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#docNameContainer:hover #editIndicator:not(.hidden) {
+    opacity: 1;
 }
 
 .modal {

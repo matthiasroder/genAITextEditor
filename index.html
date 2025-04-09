@@ -10,7 +10,18 @@
   <div class="documentControls">
     <button id="newDocBtn">New Document</button>
     <button id="openDocBtn">Open Document</button>
-    <span id="currentDocName"></span>
+    <div class="downloadOptions">
+      <button id="downloadBtn">Download</button>
+      <div class="downloadMenu hidden" id="downloadMenu">
+        <button id="downloadRightBtn">Generated Text</button>
+        <button id="downloadLeftBtn">Outline Text</button>
+        <button id="downloadBothBtn">Both Sides</button>
+      </div>
+    </div>
+    <div id="docNameContainer">
+      <span id="currentDocName" class="editable" contenteditable="true"></span>
+      <span id="editIndicator" class="hidden">(click to edit)</span>
+    </div>
   </div>
 
   <div class="versionControls">
@@ -36,15 +47,7 @@
       <tr>
         <td>
           <div class="firstRowContent">
-            <input type="text" id="docName" placeholder="Enter document name...">
-            <div class="downloadOptions">
-              <button id="downloadBtn">Download</button>
-              <div class="downloadMenu hidden" id="downloadMenu">
-                <button id="downloadRightBtn">Generated Text</button>
-                <button id="downloadLeftBtn">Outline Text</button>
-                <button id="downloadBothBtn">Both Sides</button>
-              </div>
-            </div>
+            <input type="text" id="docName" placeholder="Enter document name..." style="display: none;">
           </div>
         </td>
       </tr>
