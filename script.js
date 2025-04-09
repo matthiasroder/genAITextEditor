@@ -3,14 +3,56 @@ let autoSaveTimer;
 const typingInterval = 1000;
 const autoSaveInterval = 60000; // 1 minute
 
-// Initialize version control
-let textHistory = [];
-let currentVersionIndex = -1;
+// Window and document management
+const windowId = crypto.randomUUID();
+let activeDocument = null;
 
-// Load saved versions if available
-document.addEventListener('DOMContentLoaded', loadVersions);
+// Initialize the application
+document.addEventListener('DOMContentLoaded', initializeApplication);
 
-document.getElementById('promptText').addEventListener('input', handlePromptChange);
+// Document model structures
+function createNewDocument(name = 'Untitled') {
+    return {
+        id: crypto.randomUUID(),
+        name: name,
+        created: Date.now(),
+        updated: Date.now(),
+        versions: [],
+        currentVersionIndex: -1,
+        activeWindow: windowId
+    };
+}
+
+// Document registry management
+function getDocumentRegistry() {
+    const registry = localStorage.getItem('textEditorDocuments') || '{}';
+    return JSON.parse(registry);
+}
+
+function updateDocumentRegistry(docId, metadata) {
+    const registry = getDocumentRegistry();
+    registry[docId] = {...(registry[docId] || {}), ...metadata, updated: Date.now()};
+    localStorage.setItem('textEditorDocuments', JSON.stringify(registry));
+}
+
+// Initialize application with document handling
+function initializeApplication() {
+    // Get URL parameters to see if a specific document is requested
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get('doc');
+    
+    if (docId) {
+        loadExistingDocument(docId);
+    } else {
+        createAndLoadNewDocument();
+    }
+    
+    // Listen for changes from other windows
+    window.addEventListener('storage', handleStorageEvent);
+    
+    // Initialize all event listeners
+    initializeEventListeners();
+}
 
 async function handlePromptChange() {
     clearTimeout(typingTimer);
@@ -135,25 +177,92 @@ function attachEventListenersToNewRows() {
     });
 }
 
-// Download functionality
-const downloadBtn = document.getElementById('downloadBtn');
-const downloadMenu = document.getElementById('downloadMenu');
-
-// Toggle download menu
-downloadBtn.addEventListener('click', function (event) {
-    event.stopPropagation();
-    downloadMenu.classList.toggle('hidden');
-});
-
-// Close menu when clicking elsewhere
-document.addEventListener('click', function () {
-    downloadMenu.classList.add('hidden');
-});
-
-// Prevent menu from closing when clicking inside it
-downloadMenu.addEventListener('click', function (event) {
-    event.stopPropagation();
-});
+// Initialize event listeners
+function initializeEventListeners() {
+    // Document name change
+    document.getElementById('docName').addEventListener('change', function() {
+        if (!activeDocument) return;
+        
+        const newName = this.value.trim() || 'Untitled';
+        activeDocument.name = newName;
+        
+        // Update document registry
+        updateDocumentRegistry(activeDocument.id, {
+            name: newName
+        });
+        
+        // Update UI
+        document.getElementById('currentDocName').textContent = newName;
+    });
+    
+    // Document management
+    document.getElementById('newDocBtn').addEventListener('click', function() {
+        const name = prompt('Enter a name for the new document:', 'Untitled');
+        if (name !== null) {
+            createAndLoadNewDocument(name);
+        }
+    });
+    
+    document.getElementById('openDocBtn').addEventListener('click', function() {
+        showDocumentList();
+    });
+    
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+        document.getElementById('documentListModal').classList.add('hidden');
+    });
+    
+    // Version control listeners
+    document.getElementById('saveVersionBtn').addEventListener('click', saveVersion);
+    
+    document.getElementById('versionSelector').addEventListener('change', function() {
+        const selectedIndex = parseInt(this.value);
+        loadVersion(selectedIndex);
+    });
+    
+    document.getElementById('prevVersionBtn').addEventListener('click', function() {
+        if (activeDocument && activeDocument.currentVersionIndex > 0) {
+            loadVersion(activeDocument.currentVersionIndex - 1);
+        }
+    });
+    
+    document.getElementById('nextVersionBtn').addEventListener('click', function() {
+        if (activeDocument && 
+            activeDocument.currentVersionIndex < activeDocument.versions.length - 1) {
+            loadVersion(activeDocument.currentVersionIndex + 1);
+        }
+    });
+    
+    // Download functionality
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadMenu = document.getElementById('downloadMenu');
+    
+    // Toggle download menu
+    downloadBtn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        downloadMenu.classList.toggle('hidden');
+    });
+    
+    // Close menu when clicking elsewhere
+    document.addEventListener('click', function () {
+        downloadMenu.classList.add('hidden');
+    });
+    
+    // Prevent menu from closing when clicking inside it
+    downloadMenu.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+    
+    // Prompt handling
+    document.getElementById('promptText').addEventListener('input', handlePromptChange);
+    
+    // First-run attachments
+    document.querySelectorAll('.leftText').forEach(textarea => {
+        textarea.addEventListener('keydown', handleKeyDown);
+    });
+    
+    // Feedback handling
+    document.getElementById('feedbackText').addEventListener('focus', handleFeedbackFocus);
+}
 
 // Download functions for different content
 function downloadText(text, filename) {
@@ -231,25 +340,39 @@ document.getElementById('downloadBothBtn').addEventListener('click', function ()
     downloadText(text, filename);
 });
 
-// Version control event listeners
-document.getElementById('saveVersionBtn').addEventListener('click', saveVersion);
-
-document.getElementById('versionSelector').addEventListener('change', function() {
-    const selectedIndex = parseInt(this.value);
-    loadVersion(selectedIndex);
-});
-
-document.getElementById('prevVersionBtn').addEventListener('click', function() {
-    if (currentVersionIndex > 0) {
-        loadVersion(currentVersionIndex - 1);
+// Document management functions
+function showDocumentList() {
+    const registry = getDocumentRegistry();
+    const docList = document.getElementById('documentList');
+    docList.innerHTML = '';
+    
+    // Create document list
+    const docs = Object.keys(registry).map(id => ({
+        id,
+        ...registry[id]
+    })).sort((a, b) => b.updated - a.updated); // Sort by last updated
+    
+    if (docs.length === 0) {
+        docList.innerHTML = '<p>No documents found. Create a new one to get started.</p>';
+    } else {
+        docs.forEach(doc => {
+            const docElement = document.createElement('div');
+            docElement.className = 'document-item';
+            docElement.innerHTML = `
+                <span class="doc-name">${doc.name}</span>
+                <span class="doc-date">${formatDate(doc.updated)}</span>
+            `;
+            docElement.addEventListener('click', () => {
+                loadExistingDocument(doc.id);
+                document.getElementById('documentListModal').classList.add('hidden');
+            });
+            docList.appendChild(docElement);
+        });
     }
-});
-
-document.getElementById('nextVersionBtn').addEventListener('click', function() {
-    if (currentVersionIndex < textHistory.length - 1) {
-        loadVersion(currentVersionIndex + 1);
-    }
-});
+    
+    // Show the modal
+    document.getElementById('documentListModal').classList.remove('hidden');
+}
 
 function concatenateRightTextFields() {
     const rightTextElements = document.getElementsByClassName('rightText');
@@ -333,15 +456,23 @@ async function handleInput(event) {
         
         // Set auto-save timer after content changes
         autoSaveTimer = setTimeout(() => {
+            if (!activeDocument) return;
+            
             const autoVersion = captureCurrentState();
             autoVersion.isAutoSave = true;
+            autoVersion.editorWindow = windowId;
             
-            // If we're already at the latest version, just update it
-            if (currentVersionIndex === textHistory.length - 1) {
-                textHistory.push(autoVersion);
-                currentVersionIndex = textHistory.length - 1;
+            // If we're already at the latest version, add a new one
+            if (activeDocument.currentVersionIndex === activeDocument.versions.length - 1) {
+                activeDocument.versions.push(autoVersion);
+                activeDocument.currentVersionIndex = activeDocument.versions.length - 1;
+                activeDocument.updated = Date.now();
                 trimAutoSaves();
-                localStorage.setItem('textEditorHistory', JSON.stringify(textHistory));
+                saveDocumentToStorage();
+                updateDocumentRegistry(activeDocument.id, {
+                    updated: activeDocument.updated,
+                    versionCount: activeDocument.versions.length
+                });
                 updateVersionSelector();
             }
         }, autoSaveInterval);
@@ -360,7 +491,7 @@ function concatenateRightTextsBefore(currentRightTextArea) {
     return concatenatedText.trim();
 }
 
-// Version control functions
+// Helper functions
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
@@ -368,6 +499,104 @@ function generateId() {
 function formatDate(timestamp) {
     const date = new Date(timestamp);
     return date.toLocaleString();
+}
+
+function resetEditor() {
+    // Clear prompt settings to defaults
+    document.getElementById('systemPromptText').value = "You are an editor. You help the user write a text. Based on the user input, write the next paragraph as a continuation of the CONCATENATED TEXT. Follow the INSTRUCTIONS in doing so. Output only the paragraph.";
+    document.getElementById('promptText').value = "Don't be Shakespeare! Don't sound like ChatGPT.";
+    
+    // Clear existing rows except for the first 5 rows (header rows)
+    const tbody = document.querySelector('#editorTable tbody');
+    while (tbody.children.length > 5) {
+        tbody.removeChild(tbody.lastChild);
+    }
+    
+    // Make sure we have at least one empty content row
+    const hasContentRow = document.querySelector('#editorTable tbody tr:nth-child(6)');
+    if (!hasContentRow) {
+        const lastHeaderRow = document.querySelector('#editorTable tbody tr:nth-child(5)');
+        addNewRow(lastHeaderRow);
+    } else {
+        // Clear the first content row
+        const firstRow = document.querySelector('#editorTable tbody tr:nth-child(6)');
+        if (firstRow) {
+            const leftText = firstRow.querySelector('.leftText');
+            const rightText = firstRow.querySelector('.rightText');
+            if (leftText) leftText.value = '';
+            if (rightText) rightText.value = '';
+        }
+    }
+    
+    document.getElementById('versionInfo').textContent = '';
+    
+    // Adjust textarea heights
+    document.querySelectorAll('textarea').forEach(adjustTextAreaHeight);
+    
+    // Clear feedback
+    document.getElementById('feedbackText').value = '';
+}
+
+// Handle external changes from other windows
+function handleStorageEvent(event) {
+    if (!activeDocument) return;
+    
+    // Check if the change is for our current document
+    const docStorageKey = `textEditor_doc_${activeDocument.id}`;
+    if (event.key === docStorageKey) {
+        // Another window has modified our document
+        const newData = JSON.parse(event.newValue);
+        const lastVersion = newData.versions[newData.versions.length - 1];
+        
+        // Only react if the change was from a different window
+        if (lastVersion && lastVersion.editorWindow !== windowId) {
+            showExternalChangeNotification();
+        }
+    } else if (event.key === 'textEditorDocuments') {
+        // Document registry was updated, could be a name change
+        const registry = JSON.parse(event.newValue);
+        if (activeDocument && registry[activeDocument.id]) {
+            // Update document name if it changed
+            const newName = registry[activeDocument.id].name;
+            if (newName !== activeDocument.name) {
+                activeDocument.name = newName;
+                document.getElementById('docName').value = newName;
+                document.getElementById('currentDocName').textContent = newName;
+            }
+        }
+    }
+}
+
+function showExternalChangeNotification() {
+    const notification = document.createElement('div');
+    notification.className = 'external-change-notification';
+    notification.innerHTML = `
+        <p>This document was modified in another window.</p>
+        <button id="reload-changes">Load Changes</button>
+        <button id="keep-current">Keep My Version</button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Load the changes
+    document.getElementById('reload-changes').addEventListener('click', () => {
+        loadExistingDocument(activeDocument.id);
+        notification.remove();
+    });
+    
+    // Keep the current version and force-save it
+    document.getElementById('keep-current').addEventListener('click', () => {
+        saveVersion();
+        notification.remove();
+    });
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            notification.remove();
+        }
+    }, 10000);
 }
 
 function captureCurrentState() {
@@ -394,18 +623,32 @@ function captureCurrentState() {
 }
 
 function saveVersion() {
-    const currentVersion = captureCurrentState();
+    if (!activeDocument) return;
     
-    // If auto-saved versions exist at the end, remove them
-    if (currentVersionIndex >= 0 && currentVersionIndex < textHistory.length - 1) {
-        textHistory = textHistory.slice(0, currentVersionIndex + 1);
+    const currentVersion = captureCurrentState();
+    currentVersion.timestamp = Date.now();
+    currentVersion.editorWindow = windowId;
+    
+    // If we're not at the latest version, remove versions after current index
+    if (activeDocument.currentVersionIndex < activeDocument.versions.length - 1) {
+        activeDocument.versions = activeDocument.versions.slice(0, activeDocument.currentVersionIndex + 1);
     }
     
-    textHistory.push(currentVersion);
-    currentVersionIndex = textHistory.length - 1;
+    // Add new version
+    activeDocument.versions.push(currentVersion);
+    activeDocument.currentVersionIndex = activeDocument.versions.length - 1;
+    activeDocument.updated = Date.now();
     
-    localStorage.setItem('textEditorHistory', JSON.stringify(textHistory));
+    // Save to localStorage
+    saveDocumentToStorage();
     updateVersionSelector();
+    
+    // Update document registry
+    updateDocumentRegistry(activeDocument.id, {
+        name: activeDocument.name,
+        updated: activeDocument.updated,
+        versionCount: activeDocument.versions.length
+    });
     
     // Show confirmation
     const versionInfo = document.getElementById('versionInfo');
@@ -415,27 +658,97 @@ function saveVersion() {
     }, 2000);
 }
 
-function loadVersions() {
-    const saved = localStorage.getItem('textEditorHistory');
-    if (saved) {
-        textHistory = JSON.parse(saved);
-        currentVersionIndex = textHistory.length - 1;
-        updateVersionSelector();
-        if (currentVersionIndex >= 0) {
-            document.getElementById('versionInfo').textContent = formatDate(textHistory[currentVersionIndex].timestamp);
-        }
+function saveDocumentToStorage() {
+    if (!activeDocument) return;
+    
+    const storageKey = `textEditor_doc_${activeDocument.id}`;
+    localStorage.setItem(storageKey, JSON.stringify({
+        versions: activeDocument.versions,
+        currentVersionIndex: activeDocument.currentVersionIndex
+    }));
+}
+
+function createAndLoadNewDocument(name = 'Untitled') {
+    const doc = createNewDocument(name);
+    activeDocument = doc;
+    
+    // Update registry with new document
+    updateDocumentRegistry(doc.id, {
+        name: doc.name,
+        created: doc.created,
+        updated: doc.updated,
+        versionCount: 0
+    });
+    
+    // Update URL to include document ID
+    window.history.pushState({}, '', `?doc=${doc.id}`);
+    
+    // Clear editor and initialize with empty state
+    resetEditor();
+    document.getElementById('docName').value = doc.name;
+    document.getElementById('currentDocName').textContent = doc.name;
+    updateVersionSelector();
+    
+    // Create an initial version
+    saveVersion();
+}
+
+function loadExistingDocument(docId) {
+    const registry = getDocumentRegistry();
+    if (!registry[docId]) {
+        // Handle not found case
+        alert('Document not found');
+        createAndLoadNewDocument();
+        return;
     }
+    
+    const storageKey = `textEditor_doc_${docId}`;
+    const docData = localStorage.getItem(storageKey);
+    if (!docData) {
+        alert('Document data corrupted');
+        createAndLoadNewDocument();
+        return;
+    }
+    
+    const parsed = JSON.parse(docData);
+    activeDocument = {
+        id: docId,
+        name: registry[docId].name,
+        created: registry[docId].created,
+        updated: registry[docId].updated,
+        versions: parsed.versions || [],
+        currentVersionIndex: parsed.currentVersionIndex || -1,
+        activeWindow: windowId
+    };
+    
+    // Load latest version if available
+    if (activeDocument.versions.length > 0) {
+        loadVersion(activeDocument.currentVersionIndex);
+    } else {
+        resetEditor();
+    }
+    
+    // Update document name in UI
+    document.getElementById('docName').value = activeDocument.name;
+    document.getElementById('currentDocName').textContent = activeDocument.name;
+    
+    // Update URL to include document ID
+    window.history.pushState({}, '', `?doc=${docId}`);
+    
+    updateVersionSelector();
 }
 
 function updateVersionSelector() {
     const selector = document.getElementById('versionSelector');
     selector.innerHTML = '';
     
-    textHistory.forEach((version, index) => {
+    if (!activeDocument || !activeDocument.versions) return;
+    
+    activeDocument.versions.forEach((version, index) => {
         const option = document.createElement('option');
         option.value = index;
         option.textContent = `Version ${index + 1} - ${formatDate(version.timestamp)}`;
-        if (index === currentVersionIndex) {
+        if (index === activeDocument.currentVersionIndex) {
             option.selected = true;
         }
         selector.appendChild(option);
@@ -443,17 +756,19 @@ function updateVersionSelector() {
 }
 
 function loadVersion(index) {
-    if (index < 0 || index >= textHistory.length) return;
+    if (!activeDocument || index < 0 || index >= activeDocument.versions.length) return;
     
-    const version = textHistory[index];
+    const version = activeDocument.versions[index];
     
     // Save current state as an auto-save if we're moving away from latest version
-    if (currentVersionIndex === textHistory.length - 1 && index !== currentVersionIndex) {
+    if (activeDocument.currentVersionIndex === activeDocument.versions.length - 1 && 
+        index !== activeDocument.currentVersionIndex) {
         const autoVersion = captureCurrentState();
         autoVersion.isAutoSave = true;
         autoVersion.timestamp = Date.now();
-        textHistory.push(autoVersion);
-        localStorage.setItem('textEditorHistory', JSON.stringify(textHistory));
+        autoVersion.editorWindow = windowId;
+        activeDocument.versions.push(autoVersion);
+        saveDocumentToStorage();
         updateVersionSelector();
     }
     
@@ -522,7 +837,7 @@ function loadVersion(index) {
     
     // Update UI
     document.getElementById('versionInfo').textContent = formatDate(version.timestamp);
-    currentVersionIndex = index;
+    activeDocument.currentVersionIndex = index;
     updateVersionSelector();
     
     // Adjust heights of all textareas
@@ -530,15 +845,22 @@ function loadVersion(index) {
 }
 
 function trimAutoSaves() {
+    if (!activeDocument || !activeDocument.versions) return;
+    
     // Keep only the last 5 auto-saves to prevent too much storage usage
-    const autoSaves = textHistory.filter(v => v.isAutoSave);
+    const autoSaves = activeDocument.versions.filter(v => v.isAutoSave);
     if (autoSaves.length > 5) {
         const toRemove = autoSaves.length - 5;
-        for (let i = 0; i < textHistory.length && toRemove > 0; i++) {
-            if (textHistory[i].isAutoSave) {
-                textHistory.splice(i, 1);
+        for (let i = 0; i < activeDocument.versions.length && toRemove > 0; i++) {
+            if (activeDocument.versions[i].isAutoSave) {
+                activeDocument.versions.splice(i, 1);
                 i--;
                 toRemove--;
+                
+                // Adjust current version index if needed
+                if (i < activeDocument.currentVersionIndex) {
+                    activeDocument.currentVersionIndex--;
+                }
             }
         }
     }

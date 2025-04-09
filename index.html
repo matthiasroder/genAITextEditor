@@ -7,12 +7,26 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="documentControls">
+    <button id="newDocBtn">New Document</button>
+    <button id="openDocBtn">Open Document</button>
+    <span id="currentDocName"></span>
+  </div>
+
   <div class="versionControls">
     <button id="saveVersionBtn">Save Version</button>
     <select id="versionSelector"></select>
     <button id="prevVersionBtn">←</button>
     <button id="nextVersionBtn">→</button>
     <span id="versionInfo"></span>
+  </div>
+  
+  <div id="documentListModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Your Documents</h3>
+      <div id="documentList"></div>
+      <button id="closeModalBtn">Close</button>
+    </div>
   </div>
 
   <table id="editorTable">

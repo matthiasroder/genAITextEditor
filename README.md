@@ -5,7 +5,9 @@ This project is a web-based text editor that transforms user input text using Op
 ## Features
 
 - **Live Text Transformation**: As you type, your text is automatically transformed using the GPT API and displayed in a separate column.
+- **Multi-Document Support**: Create, manage, and switch between multiple documents with seamless navigation.
 - **Version Control**: Save, browse, and restore different versions of your document with automatic and manual saving options.
+- **Cross-Window Collaboration**: Work on the same document in multiple browser windows with conflict resolution.
 - **AI Feedback**: Receive feedback on your text as you write to help improve your content.
 - **Grid-Based Layout**: Allows you to see your outline and the AI-generated text on the same page.
 - **Custom Prompt**: Edit the transformation prompt to customize how your text is processed.
@@ -43,37 +45,48 @@ This project is a web-based text editor that transforms user input text using Op
 
 ## Usage
 
-1. **Input Your Text**
+1. **Managing Documents**
+   - Create a new document with the "New Document" button
+   - Open existing documents with the "Open Document" button
+   - Document names are shown in the top bar and can be changed in the document name field
+
+2. **Input Your Text**
    - In the left column, enter the outline or notes for the text you want to transform.
 
-2. **View Transformed Text**
+3. **View Transformed Text**
    - As you type, the AI-generated text will be displayed in the right column, based on your outline and previously generated paragraphs.
 
-3. **Add New Rows**
+4. **Add New Rows**
    - You can add new rows by holding `Shift` and pressing `Arrow Down`. Each new row allows you to transform additional pieces of text.
   
-4. **Modify the Prompt**
+5. **Modify the Prompt**
    - The system prompt and instructions are editable directly in the web interface. This allows you to experiment with different prompts to achieve various text transformation outcomes.
 
-5. **Get AI Feedback**
+6. **Get AI Feedback**
    - Click in the yellow feedback textarea to receive suggestions for improving your text.
 
-6. **Version Control**
+7. **Version Control**
    - Use the version control bar at the top of the page to:
      - Save versions manually with the "Save Version" button
      - Navigate between versions using the dropdown or arrow buttons
      - Automatically save versions after content changes (happens automatically)
 
-7. **Download Options**
+8. **Download Options**
    - Click the "Download" button to access download options:
      - **Generated Text**: Download only the AI-generated content (right side)
      - **Outline Text**: Download only your outlines/notes (left side)
      - **Both Sides**: Download both sides with paragraph labels and formatting
 
+9. **Multi-Window Editing**
+   - Open the same document in multiple browser windows by sharing the URL
+   - Changes made in one window will prompt a notification in other windows
+   - Choose to load external changes or keep your current version
+
 ## Technical Notes
 
 - The application uses the OpenAI API with the gpt-4o-mini model
-- Version history is stored in the browser's localStorage
+- Document data and version history are stored in the browser's localStorage
+- Each document has a unique ID that is included in the URL for sharing
 - No server-side components are required to run this application
 
 ## Copyright
