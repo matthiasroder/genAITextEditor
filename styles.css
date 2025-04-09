@@ -158,6 +158,13 @@ td {
     max-width: 600px;
 }
 
+.modal-footer {
+    margin-top: 15px;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
 #documentList {
     margin: 15px 0;
     max-height: 300px;
@@ -171,6 +178,60 @@ td {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    position: relative;
+}
+
+.document-actions {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: #f8f9fa;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.document-item:hover .document-actions {
+    display: flex;
+}
+
+.delete-doc-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-doc-btn:hover {
+    background-color: #c82333;
+}
+
+.confirm-delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(220, 53, 69, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.confirm-delete span {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.confirm-delete button {
+    margin-left: 10px;
 }
 
 .document-item:hover {

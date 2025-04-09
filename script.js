@@ -358,20 +358,91 @@ function showDocumentList() {
         docs.forEach(doc => {
             const docElement = document.createElement('div');
             docElement.className = 'document-item';
-            docElement.innerHTML = `
+            docElement.dataset.docId = doc.id;
+            
+            // Document info
+            const docInfo = document.createElement('div');
+            docInfo.style.flexGrow = '1';
+            docInfo.innerHTML = `
                 <span class="doc-name">${doc.name}</span>
                 <span class="doc-date">${formatDate(doc.updated)}</span>
             `;
-            docElement.addEventListener('click', () => {
+            docInfo.addEventListener('click', (e) => {
+                // Don't process click if we're in delete confirmation mode
+                if (docElement.querySelector('.confirm-delete')) return;
+                
                 loadExistingDocument(doc.id);
                 document.getElementById('documentListModal').classList.add('hidden');
             });
+            docElement.appendChild(docInfo);
+            
+            // Document actions
+            const docActions = document.createElement('div');
+            docActions.className = 'document-actions';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-doc-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent document open
+                showDeleteConfirmation(docElement, doc);
+            });
+            
+            docActions.appendChild(deleteBtn);
+            docElement.appendChild(docActions);
+            
             docList.appendChild(docElement);
         });
     }
     
     // Show the modal
     document.getElementById('documentListModal').classList.remove('hidden');
+}
+
+function showDeleteConfirmation(docElement, doc) {
+    // Remove any existing confirmation dialogs
+    document.querySelectorAll('.confirm-delete').forEach(el => el.remove());
+    
+    const confirmDelete = document.createElement('div');
+    confirmDelete.className = 'confirm-delete';
+    confirmDelete.innerHTML = `
+        <span>Delete "${doc.name}"?</span>
+        <button id="cancel-delete">Cancel</button>
+        <button id="confirm-delete" class="delete-doc-btn">Delete</button>
+    `;
+    
+    // Add event listeners for the confirmation buttons
+    confirmDelete.querySelector('#cancel-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        confirmDelete.remove();
+    });
+    
+    confirmDelete.querySelector('#confirm-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteDocument(doc.id);
+        docElement.remove();
+        confirmDelete.remove();
+    });
+    
+    docElement.appendChild(confirmDelete);
+}
+
+function deleteDocument(docId) {
+    // Remove from document registry
+    const registry = getDocumentRegistry();
+    delete registry[docId];
+    localStorage.setItem('textEditorDocuments', JSON.stringify(registry));
+    
+    // Remove document data
+    const storageKey = `textEditor_doc_${docId}`;
+    localStorage.removeItem(storageKey);
+    
+    console.log(`Deleted document: ${docId}`);
+    
+    // If current document was deleted, create a new one
+    if (activeDocument && activeDocument.id === docId) {
+        createAndLoadNewDocument();
+    }
 }
 
 function concatenateRightTextFields() {
