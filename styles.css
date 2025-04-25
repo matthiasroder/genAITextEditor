@@ -1,11 +1,12 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;  /* Align content at the top */
+    flex-direction: column;
+    align-items: center;
     height: 100vh;
     margin: 0;
     overflow-y: auto;  /* Allow vertical scrolling if content overflows */
+    position: relative;  /* for absolute positioning of side panel */
 }
 
 table {
@@ -19,6 +20,42 @@ table {
 /* Add margin-bottom to the first row content */
 .firstRowContent {
     margin-bottom: 20px;  /* Adjust the value as needed */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.downloadOptions {
+    position: relative;
+}
+
+.downloadMenu {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    width: 150px;
+}
+
+.downloadMenu button {
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    float: none;
+    font-size: 14px;
+}
+
+.downloadMenu button:hover {
+    background-color: #f5f5f5;
 }
 
 input {
@@ -29,9 +66,9 @@ input {
 }
 
 button {
-  float: right;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 15px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 textarea {
@@ -70,7 +107,7 @@ td {
 }
 
 #feedbackText {
-    background-color: #ffffcc; /* Light red background */
+    background-color: #ffffcc; /* Light yellow background */
     color: #333;               /* Darker text color for readability */
     padding: 10px;             /* Add some padding for better appearance */
     font-size: 16px;           /* Set a comfortable font size */
@@ -78,4 +115,334 @@ td {
     min-height: 100px;  /* Adjust this value based on the text length */
     width: 100%;               /* Make the textarea take the full width */
     resize: none;              /* Disable manual resizing */
+}
+
+.documentControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.versionControlsInline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+#docNameContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-right: 15px;
+}
+
+#currentDocName {
+    font-weight: bold;
+    color: #333;
+    padding: 3px 6px;
+    border-radius: 3px;
+    min-width: 150px;
+    text-align: left;
+    outline: none;
+}
+
+#currentDocName:hover {
+    background-color: #f0f0f0;
+}
+
+#currentDocName:focus {
+    background-color: #f0f0f0;
+    border: 1px dashed #ccc;
+    padding: 2px 5px;
+}
+
+#editIndicator {
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    font-size: 10px;
+    color: #999;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#docNameContainer:hover #editIndicator:not(.hidden) {
+    opacity: 1;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-footer {
+    margin-top: 15px;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+#documentList {
+    margin: 15px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.document-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.document-actions {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: #f8f9fa;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.document-item:hover .document-actions {
+    display: flex;
+}
+
+.delete-doc-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-doc-btn:hover {
+    background-color: #c82333;
+}
+
+.confirm-delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(220, 53, 69, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.confirm-delete span {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.confirm-delete button {
+    margin-left: 10px;
+}
+
+.document-item:hover {
+    background-color: #f5f5f5;
+}
+
+.doc-name {
+    font-weight: bold;
+}
+
+.doc-date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+#versionSelector {
+    min-width: 120px;
+    max-width: 200px;
+    padding: 6px;
+    font-size: 13px;
+}
+
+#prevVersionBtn, #nextVersionBtn {
+    float: none;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+#versionInfo {
+    font-size: 13px;
+    color: #666;
+}
+
+#saveVersionBtn {
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Start off-screen */
+    width: 380px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: -3px 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.side-panel.active {
+    right: 0;
+}
+
+.side-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+.side-panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.close-panel {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    color: #666;
+}
+
+.side-panel-content {
+    padding: 20px;
+}
+
+.settings-section {
+    margin-bottom: 25px;
+}
+
+.settings-section h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #444;
+}
+
+.settings-section input, 
+.settings-section textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.settings-section textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Overlay when panel is open */
+.panel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.3);
+    z-index: 999;
+    display: none;
+}
+
+.panel-overlay.active {
+    display: block;
+}
+
+.external-change-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.external-change-notification p {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+}
+
+.external-change-notification button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#reload-changes {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#keep-current {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
 }
